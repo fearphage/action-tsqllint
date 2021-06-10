@@ -16,7 +16,7 @@ command_args="$command_args $INPUT_PATH"
 
 echo "Resulting command: tsqllint $command_args"
 
-tsqllint $command_args
+$(npm bin)/tsqllint $command_args
 code=$?
 
 if [ "$code" -eq 0 ]; then
