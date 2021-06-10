@@ -1,0 +1,48 @@
+name: TSQLLint with annotations
+author: fearphage <fearphage+action-tsqllint@gmail.com>
+description: TSQLLint with annotations for pull requests
+
+inputs:
+  config_path:
+    default: ''
+    description: Custom path to .tsqlintrc file
+    required: false
+  path:
+    description: filename or path to run tsqllint against
+    required: true
+  tsqllint_version:
+    default: ''
+    description: Version of tsqllint to use if none is installed (default is latest)
+    required: false
+  warn_only:
+    default: ''
+    description: If set will warn of errors, but will not fail the action
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - run: |
+        if [ -z '${{ inputs.path }}' ]; then
+          echo '::error::path argument is required'
+        fi
+
+        if [ -n '${{ inputs.tsqllint_version }}' ]; then
+          tsqllint_version='@${{ inputs.tsqllint_version }}'
+        else
+          tsqllint_version=
+        fi
+
+        npm list tsqllint || npm install tsqllint$tsqllint_version
+      shell: bash
+    - run: ${{ github.action_path }}/action/entrypoint.sh
+      shell: bash
+      env:
+        INPUT_CONFIG_PATH: ${{ inputs.config_path }}
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_TSQLLINT_VERSION: ${{ inputs.tsqllint_version }}
+        INPUT_WARN_ONLY: ${{ inputs.warn_only }}
+
+branding:
+  icon: code
+  color: red

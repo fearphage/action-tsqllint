@@ -1,0 +1,46 @@
+name: Testing
+
+on: [push]
+
+jobs:
+  run-with-warnings:
+    name: WARN_ONLY
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: ./
+        with:
+          path: test/bad
+          warn_only: true
+
+  custom-version:
+    name: custom version of TSQLLint (1.9.0)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: setup-node@v2
+      - uses: ./
+        with:
+          path: test/valid
+          tsqllint_version: 1.9.0
+
+  preinstalled-tsqllint:
+    name: preinstalled version of tsqllint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: npm install tsqllint
+      - uses: ./
+        with:
+          path: test/valid
+
+  codespell:
+    name: Check for spelling errors
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: codespell-project/actions-codespell@master
+        with:
+          check_filenames: true
+          check_hidden: true
+          skip: ./.git
